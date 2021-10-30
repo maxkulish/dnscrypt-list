@@ -1,23 +1,21 @@
 ---
 blacklist:
-  malware:
-    - url: "https://www.malwaredomainlist.com/hostslist/hosts.txt"
-      format: host
-    - url: "https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADomains.txt"
-      format: domain
-    - url: "https://malc0de.com/bl/ZONES"
-      format: bind
-    - url: "https://urlhaus.abuse.ch/downloads/text"
-      format: url
-  tracking:
-    - url: "https://raw.githubusercontent.com/notracking/hosts-blocklists/master/dnscrypt-proxy/dnscrypt-proxy.blacklist.txt"
-      format: domain
-      notes: "notracking"
+  - url: "https://www.malwaredomainlist.com/hostslist/hosts.txt"
+    format: host
+    notes: "malwaredomainlist"
+  - url: "https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADomains.txt"
+    format: domain
+  - url: "https://malc0de.com/bl/ZONES"
+    format: bind
+  - url: "https://urlhaus.abuse.ch/downloads/text"
+    format: url
+  - url: "https://raw.githubusercontent.com/notracking/hosts-blocklists/master/dnscrypt-proxy/dnscrypt-proxy.blacklist.txt"
+    format: domain
+    notes: "notracking"
 whitelist:
-  public:
-    - url: ""
-      format: host
-  private:
-    - file: "/opt/dnscrypt-proxy/whitelist-private.txt"
-      format: domain
-      notes: "my private domains to allow even if some of them are on the blacklist"
+  - url: ""
+    format: host
+    notes: "public list of popular services"
+  - file: "/opt/dnscrypt-proxy/whitelist-private.txt"
+    format: domain
+    notes: "my private domains to allow even if some of them are on the blacklist"

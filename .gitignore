@@ -16,3 +16,8 @@
 
 .idea/
 .code/
+
+# binary files and folders
+bin/
+
+*.log

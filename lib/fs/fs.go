@@ -5,7 +5,6 @@ import "os"
 
 // CreateFileOrTruncate creates or truncates the named file
 func CreateFileOrTruncate(path string) (*os.File, error) {
-
 	f, err := os.Create(path)
 	if err != nil {
 		return nil, err

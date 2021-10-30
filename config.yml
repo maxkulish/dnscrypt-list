@@ -1,0 +1,16 @@
+---
+timeout: "1m"
+temp_db: "/tmp/dnscrypt"
+
+update:
+  sources: "1h"
+  blacklist: "5m"
+  whitelist: "6h"
+
+sources:
+  file: "sources.yml"
+#  url: "https://raw.githubusercontent.com/maxkulish/dnscrypt-list/main/sources.yml"
+
+output:
+  allowed_names: "/etc/dnscrypt-proxy/allowed-names.txt"
+  blocked_names: "/etc/dnscrypt-proxy/blacklist-domains.txt"

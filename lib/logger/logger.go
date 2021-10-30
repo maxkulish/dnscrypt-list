@@ -11,12 +11,12 @@ import (
 )
 
 // Global variables against which all our logging occurs.
-// api-monitor-server --logEnv=prod --logFile=/var/log/api-monitor.log
+// dnscrypt-list --env=prod --logFile=/var/log/api-monitor.log
 var (
 	zapLogger *zap.Logger
 
-	loggerEnv  = flag.String("logEnv", "dev", "Environment in which api-logger is working")
-	loggerFile = flag.String("logFile", "./api-monitor.log", "Path to the file where you want to save logs")
+	loggerEnv  = flag.String("env", "dev", "Environment in which dnscrypt-list is working")
+	loggerFile = flag.String("log", "./dnscrypt-list.log", "Path to the file where you want to save logs")
 )
 
 // newLogger return development or production logger
@@ -58,7 +58,6 @@ func ProdLogger(file string) (*zap.Logger, error) {
 
 // SetLogger creates new development logger
 func SetLogger() {
-
 	err := fs.CreateFileIfNotExist(*loggerFile)
 	if err != nil {
 		log.Fatal(err.Error())
