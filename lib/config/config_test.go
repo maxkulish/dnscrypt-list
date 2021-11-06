@@ -15,8 +15,9 @@ func TestGetConfig(t *testing.T) {
 	}
 
 	expConfig := &Config{
-		Timeout: 1 * time.Minute,
-		TempDB:  "/tmp/dnscrypt",
+		Timeout:     1 * time.Minute,
+		WhiteListDB: "/tmp/dnscrypt/whitelist.db",
+		BlackListDB: "/tmp/dnscrypt/blacklist.db",
 		Update: Update{
 			Sources:   1 * time.Hour,
 			Blacklist: 5 * time.Minute,

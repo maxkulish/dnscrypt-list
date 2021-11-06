@@ -32,3 +32,21 @@ func (c *Conn) Close() {
 		logger.Error("database closing error", zap.Error(err))
 	}
 }
+
+// AddBunch takes map and adds them to the database
+func (c *Conn) AddBunch(updates map[string]string) error {
+
+	var err error
+	txn := c.conn.NewTransaction(true)
+	for k, v := range updates {
+		if err := txn.Set([]byte(k), []byte(v)); err == badger.ErrTxnTooBig {
+			err = txn.Commit()
+			txn = c.conn.NewTransaction(true)
+			_ = txn.Set([]byte(k), []byte(v))
+		}
+	}
+	err = txn.Commit()
+
+	logger.Debug("bunch saved to the db", zap.Int("total", len(updates)))
+	return err
+}

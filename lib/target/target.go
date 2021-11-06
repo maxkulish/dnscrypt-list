@@ -20,7 +20,7 @@ const (
 )
 
 // Type of targets
-type Type int8
+type Type int
 
 const (
 	// WhiteList allowed targets
@@ -33,10 +33,17 @@ const (
 type Target struct {
 	RawURL     string
 	TargetType Type
-	URL        url.URL
+	URL        *url.URL
 	Paths      string
 	Format     Format
 	Notes      string
+}
+
+// NormalizeURL converts RawURL to URL
+func (t *Target) NormalizeURL() {
+	if normURL, err := url.Parse(t.RawURL); err == nil {
+		t.URL = normURL
+	}
 }
 
 // NewTarget creates an instance of the Target
@@ -47,13 +54,14 @@ func NewTarget() *Target {
 // NewTargetFromRaw creates Target instance
 // NewTargetFromRaw("blacklist", &rawTarget) -> *Target
 func NewTargetFromRaw(rawTarget *config.RawTarget) *Target {
-
-	return &Target{
+	t := &Target{
 		RawURL:     rawTarget.URL,
 		Paths:      rawTarget.File,
 		Format:     getFormat(rawTarget.Format),
 		TargetType: getType(rawTarget.Type),
 	}
+	t.NormalizeURL()
+	return t
 }
 
 // getFormat converts string to the Format type

@@ -66,7 +66,9 @@ type SourcesLink struct {
 // Config represents dnscrypt-list configuration parsed from the file --conf
 type Config struct {
 	Timeout     time.Duration `yaml:"timeout"`
-	TempDB      string        `yaml:"temp_db"`
+	TempDir     string        `yaml:"temp_dir"`
+	WhiteListDB string        `yaml:"whitelist_db"`
+	BlackListDB string        `yaml:"blacklist_db"`
 	Update      `yaml:"update"`
 	SourcesLink `yaml:"sources"`
 	Output      `yaml:"output"`

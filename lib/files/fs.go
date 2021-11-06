@@ -42,3 +42,15 @@ func IsPathExist(path string) bool {
 	}
 	return true
 }
+
+// DeleteAllFiles removes files in the folder
+func DeleteAllFiles(paths ...string) error {
+	var err error
+	for _, path := range paths {
+		err = os.RemoveAll(path)
+		if err != nil {
+			continue
+		}
+	}
+	return err
+}

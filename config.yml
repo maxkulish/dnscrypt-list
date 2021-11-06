@@ -1,6 +1,8 @@
 ---
 timeout: "1m"
-temp_db: "/tmp/dnscrypt"
+temp_dir: "/tmp/dnscrypt"
+blacklist_db: "/tmp/dnscrypt/blacklist.db"
+whitelist_db: "/tmp/dnscrypt/whitelist.db"
 
 update:
   sources: "1h"
