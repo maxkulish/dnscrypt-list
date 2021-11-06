@@ -5,6 +5,7 @@ import (
 	"github.com/maxkulish/dnscrypt-list/lib/config"
 	"github.com/maxkulish/dnscrypt-list/lib/db"
 	"github.com/maxkulish/dnscrypt-list/lib/logger"
+	"github.com/maxkulish/dnscrypt-list/lib/target"
 	"go.uber.org/zap"
 	"os"
 )
@@ -26,5 +27,13 @@ func main() {
 		logger.Error("database connection error", zap.Error(err))
 	}
 	defer conn.Close()
+
+	logger.Info("collecting targets ...")
+	targets, err := target.CollectTargets(conf)
+	if err != nil {
+		logger.Error("targets error", zap.Error(err))
+	}
+
+	fmt.Println("Found targets:", targets.Length())
 
 }

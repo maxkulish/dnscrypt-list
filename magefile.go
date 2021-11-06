@@ -5,6 +5,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/carolynvs/magex/pkg"
 	"github.com/magefile/mage/mg"
@@ -60,6 +61,10 @@ func EnsureRevive() error {
 
 // Test runs all test
 func Test() error {
+	err := sh.RunV("go", "test", "-v", "./...")
 
-	return sh.RunV("go", "test", "-v", "./...")
+	err = os.RemoveAll("./*/*.log")
+	err = os.RemoveAll("./*/*/*.log")
+
+	return err
 }

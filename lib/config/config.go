@@ -15,9 +15,9 @@ type SourceType int8
 
 const (
 	// BlackList - domains to block
-	BlackList SourceType = iota
+	blackList SourceType = iota + 1
 	// WhiteList - domains to allow
-	WhiteList
+	whiteList
 )
 
 var (
@@ -27,9 +27,9 @@ var (
 
 // Update keeps timing params. How often to update different sources
 type Update struct {
-	Sources   string `yaml:"sources"`
-	Blacklist string `yaml:"blacklist"`
-	Whitelist string `yaml:"whitelist"`
+	Sources   time.Duration `yaml:"sources"`
+	Blacklist time.Duration `yaml:"blacklist"`
+	Whitelist time.Duration `yaml:"whitelist"`
 }
 
 // Output keeps paths to the output files
@@ -40,30 +40,21 @@ type Output struct {
 	BlockedNames string `yaml:"blocked_names"`
 }
 
-// Target keeps params of sources
+// RawTarget keeps params of sources
 // URL - "https://example.com/hosts.txt"
 // Format: host, domain, bind, url
 // Notes - additional information about target
-type Target struct {
-	URL    string `yaml:"url"`
+type RawTarget struct {
+	URL    string `yaml:"url,omitempty"`
+	File   string `yaml:"file,omitempty"`
 	Format string `yaml:"format"`
+	Type   string `yaml:"type"`
 	Notes  string `yaml:"notes,omitempty"`
 }
 
-// Sources keeps the list of Blacklist and Whitelist
+// Sources keeps the list of RawTarget
 type Sources struct {
-	Blacklist []*Target `yaml:"blacklist"`
-	Whitelist []*Target `yaml:"whitelist"`
-}
-
-// addTarget append targets to the BlackList or WhiteList
-func (s *Sources) addTarget(targType SourceType, targets []*Target) {
-	switch targType {
-	case BlackList:
-		s.Blacklist = append(s.Blacklist, targets...)
-	case WhiteList:
-		s.Whitelist = append(s.Whitelist, targets...)
-	}
+	Targets []*RawTarget `yaml:"targets"`
 }
 
 // SourcesLink keeps file path or url to the sources list

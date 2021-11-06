@@ -1,9 +1,5 @@
 ---
 targets:
-  - url: "https://www.malwaredomainlist.com/hostslist/hosts.txt"
-    format: host
-    notes: "malwaredomainlist"
-    type: "blacklist"
   - url: "https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADomains.txt"
     format: domain
     type: "blacklist"
@@ -12,10 +8,6 @@ targets:
     type: "blacklist"
   - url: "https://urlhaus.abuse.ch/downloads/text"
     format: url
-    type: "blacklist"
-  - url: "https://raw.githubusercontent.com/notracking/hosts-blocklists/master/dnscrypt-proxy/dnscrypt-proxy.blacklist.txt"
-    format: domain
-    notes: "notracking"
     type: "blacklist"
   - url: "https://joewein.net/dl/bl/dom-bl.txt"
     format: host

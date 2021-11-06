@@ -3,7 +3,7 @@ package logger
 
 import (
 	"flag"
-	"github.com/maxkulish/dnscrypt-list/lib/fs"
+	"github.com/maxkulish/dnscrypt-list/lib/files"
 	"log"
 
 	"go.uber.org/zap"
@@ -58,7 +58,7 @@ func ProdLogger(file string) (*zap.Logger, error) {
 
 // SetLogger creates new development logger
 func SetLogger() {
-	err := fs.CreateFileIfNotExist(*loggerFile)
+	err := files.CreateFileIfNotExist(*loggerFile)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

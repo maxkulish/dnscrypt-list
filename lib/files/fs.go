@@ -1,5 +1,5 @@
-// Package fs contains all utilities to work with files
-package fs
+// Package files contains all utilities to work with files
+package files
 
 import "os"
 
