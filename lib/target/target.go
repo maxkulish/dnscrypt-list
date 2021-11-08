@@ -34,7 +34,7 @@ type Target struct {
 	RawURL     string
 	TargetType Type
 	URL        *url.URL
-	Paths      string
+	Path       string
 	Format     Format
 	Notes      string
 }
@@ -56,7 +56,7 @@ func NewTarget() *Target {
 func NewTargetFromRaw(rawTarget *config.RawTarget) *Target {
 	t := &Target{
 		RawURL:     rawTarget.URL,
-		Paths:      rawTarget.File,
+		Path:       rawTarget.File,
 		Format:     getFormat(rawTarget.Format),
 		TargetType: getType(rawTarget.Type),
 	}

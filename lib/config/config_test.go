@@ -28,8 +28,8 @@ func TestGetConfig(t *testing.T) {
 			URL:      "",
 		},
 		Output: Output{
-			AllowedNames: "/etc/dnscrypt-proxy/allowed-names.txt",
-			BlockedNames: "/etc/dnscrypt-proxy/blacklist-domains.txt",
+			Whitelist: "/etc/dnscrypt-proxy/allowed-names.txt",
+			Blacklist: "/etc/dnscrypt-proxy/blacklist-domains.txt",
 		},
 		SourceList: &Sources{
 			Targets: []*RawTarget{

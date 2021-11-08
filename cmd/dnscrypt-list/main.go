@@ -7,6 +7,7 @@ import (
 	"github.com/maxkulish/dnscrypt-list/lib/download"
 	"github.com/maxkulish/dnscrypt-list/lib/files"
 	"github.com/maxkulish/dnscrypt-list/lib/logger"
+	"github.com/maxkulish/dnscrypt-list/lib/output"
 	"github.com/maxkulish/dnscrypt-list/lib/target"
 	"go.uber.org/zap"
 	"os"
@@ -61,6 +62,22 @@ func main() {
 	err = download.ReadFilesAndSaveToDB(tempFiles, blacklist, target.BlackList)
 	if err != nil {
 		logger.Error("blacklist read and save error", zap.Error(err))
+	}
+
+	// Read whitelist from the DB and save to the output file
+	keys := whitelist.GetAllKeys()
+
+	err = output.SaveDomainToFile(conf.Output.Whitelist, keys)
+	if err != nil {
+		logger.Error("save domains to the file error", zap.Error(err))
+	}
+
+	// Read blacklist from the DB and save to the output file
+	keys = blacklist.GetAllKeys()
+
+	err = output.SaveDomainToFile(conf.Output.Blacklist, keys)
+	if err != nil {
+		logger.Error("save domains to the file error", zap.Error(err))
 	}
 
 	err = files.DeleteAllFiles(tempFiles...)

@@ -14,5 +14,7 @@ sources:
 #  url: "https://raw.githubusercontent.com/maxkulish/dnscrypt-list/main/sources.yml"
 
 output:
-  allowed_names: "/etc/dnscrypt-proxy/allowed-names.txt"
-  blocked_names: "/etc/dnscrypt-proxy/blacklist-domains.txt"
+#  whitelist_path: "/etc/dnscrypt-proxy/allowed-names.txt"
+#  blacklist_path: "/etc/dnscrypt-proxy/blacklist-domains.txt"
+  whitelist_path: "/tmp/dnscrypt/allowed-names.txt"
+  blacklist_path: "/tmp/dnscrypt/blacklist-domains.txt"

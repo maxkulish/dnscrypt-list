@@ -50,3 +50,28 @@ func (c *Conn) AddBunch(updates map[string]string) error {
 	logger.Debug("bunch saved to the db", zap.Int("total", len(updates)))
 	return err
 }
+
+//GetAllKeys iterate all keys and returns them in the slice
+func (c *Conn) GetAllKeys() []string {
+
+	var keys []string
+	err := c.conn.View(func(txn *badger.Txn) error {
+		opts := badger.DefaultIteratorOptions
+		opts.PrefetchValues = false
+		it := txn.NewIterator(opts)
+		defer it.Close()
+		for it.Rewind(); it.Valid(); it.Next() {
+			item := it.Item()
+			k := item.Key()
+
+			keys = append(keys, string(k))
+		}
+		return nil
+	})
+
+	if err != nil {
+		logger.Error("get all keys error", zap.Error(err))
+	}
+
+	return keys
+}

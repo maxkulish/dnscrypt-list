@@ -36,8 +36,8 @@ type Update struct {
 // these two params are defined in the dnscrypt-proxy config
 // [blocked_names] and [allowed_names]
 type Output struct {
-	AllowedNames string `yaml:"allowed_names"`
-	BlockedNames string `yaml:"blocked_names"`
+	Whitelist string `yaml:"whitelist_path"`
+	Blacklist string `yaml:"blacklist_path"`
 }
 
 // RawTarget keeps params of sources

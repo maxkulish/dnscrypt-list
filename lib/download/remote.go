@@ -26,6 +26,9 @@ func GetAndSaveTargets(tempDir string, targets *target.TargetsStore) ([]string, 
 	for i, targ := range targets.Targets {
 
 		if targ.URL.String() == "" {
+			if targ.Path != "" {
+				tempFiles = append(tempFiles, targ.Path)
+			}
 			continue
 		}
 
@@ -50,6 +53,8 @@ func GetAndSaveTargets(tempDir string, targets *target.TargetsStore) ([]string, 
 	}
 
 	logger.Info("all remote targets downloaded", zap.Int64("size", bytesDownloaded))
+
+	logger.Info("local files from config added")
 
 	return tempFiles, nil
 }
