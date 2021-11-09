@@ -1,6 +1,7 @@
 package files
 
 import (
+	"fmt"
 	"os"
 	"testing"
 )
@@ -17,7 +18,7 @@ func TestIsIsPathExist(t *testing.T) {
 		t.Error("can't create test file", err)
 	}
 	defer func() {
-		os.RemoveAll(testFile)
+		err = os.RemoveAll(testFile)
 	}()
 
 	pathValid := func(path string, expRes bool) {
@@ -31,4 +32,20 @@ func TestIsIsPathExist(t *testing.T) {
 	pathValid(testFile, true)
 	pathValid("/opt/dnscrypt-proxy/whitelist-private.txt", true)
 	pathValid("/abc/unknown.txt", false)
+}
+
+func ExampleIsPathExist() {
+	fmt.Println(IsPathExist("/opt/dnscrypt-proxy/whitelist-private.txt"))
+	fmt.Println(IsPathExist("/abc/unknown.txt"))
+	// Output:
+	// true
+	// false
+}
+
+func BenchmarkIsPathExist(b *testing.B) {
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
+		IsPathExist("/opt/dnscrypt-proxy/whitelist-private.txt")
+	}
 }

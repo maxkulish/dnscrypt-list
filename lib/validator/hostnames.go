@@ -16,7 +16,7 @@ var (
 	ErrorScheme = errors.New("scheme is obligatory")
 )
 
-// IsURL defines is it URL or local system path
+// IsURL defines is it URL or not
 // http://example.com -> true
 // /etc/hosts -> false
 func IsURL(urlOrPath string) (bool, error) {

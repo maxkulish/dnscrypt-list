@@ -1,6 +1,7 @@
 package validator
 
 import (
+	"fmt"
 	"github.com/maxkulish/dnscrypt-list/lib/logger"
 	"testing"
 )
@@ -28,6 +29,14 @@ func TestIsURL(t *testing.T) {
 	isURL("google.com", false)
 	isURL("/etc/hosts", false)
 	isURL("localhost", false)
+}
+
+func ExampleIsURL() {
+	fmt.Println(IsURL("http://google.com"))
+	fmt.Println(IsURL("/etc/hosts"))
+	// Output:
+	// true <nil>
+	// false scheme is obligatory
 }
 
 func TestIsValidHost(t *testing.T) {
