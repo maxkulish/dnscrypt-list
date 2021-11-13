@@ -13,20 +13,25 @@ import (
 )
 
 //ReadFilesAndSaveToDB reads local files and save them to the DB
-func ReadFilesAndSaveToDB(tempFiles []string, conn *db.Conn, targetType target.Type) error {
-
-	tmpFiles := FilterByTargetType(targetType, tempFiles...)
+func ReadFilesAndSaveToDB(tempFiles []LocalFile, conn *db.Conn, targetType target.Type) error {
 
 	var total int64
 	var err error
 
-	for _, tmpFile := range tmpFiles {
+	for _, tmpFile := range tempFiles {
+
+		// skip wrong type
+		if tmpFile.Type != targetType {
+			continue
+		}
 
 		foundDomain := make(map[string]string)
 
 		var fileLines int
-		logger.Debug("start reading file", zap.String("fileName", tmpFile))
-		f, err := os.Open(tmpFile)
+		logger.Debug(
+			"start reading file",
+			zap.String("fileName", tmpFile.Path))
+		f, err := os.Open(tmpFile.Path)
 		if err != nil {
 			logger.Debug("open file error", zap.Error(err))
 		}

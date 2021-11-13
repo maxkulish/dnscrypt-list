@@ -39,16 +39,27 @@ type Target struct {
 	Notes      string
 }
 
+// TypeString returns string representation of target Type
+// t.TypeString(1) -> whitelist
+// t.TypeString(2) -> blacklist
+// t.TypeString(0) -> ""
+// t.TypeString(5) -> ""
+func (t *Target) TypeString() string {
+	switch t.TargetType {
+	case 1:
+		return "whitelist"
+	case 2:
+		return "blacklist"
+	default:
+		return ""
+	}
+}
+
 // NormalizeURL converts RawURL to URL
 func (t *Target) NormalizeURL() {
 	if normURL, err := url.Parse(t.RawURL); err == nil {
 		t.URL = normURL
 	}
-}
-
-// NewTarget creates an instance of the Target
-func NewTarget() *Target {
-	return &Target{}
 }
 
 // NewTargetFromRaw creates Target instance

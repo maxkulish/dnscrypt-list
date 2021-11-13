@@ -47,19 +47,19 @@ func main() {
 
 	logger.Info("found targets", zap.Int("total", targets.Length()))
 
-	tempFiles, err := download.GetAndSaveTargets(conf.TempDir, targets)
+	localFiles, err := download.GetAndSaveTargets(conf.TempDir, targets)
 	if err != nil {
 		logger.Error("get and save targets error", zap.Error(err))
 	}
 
 	// Read files and save them to the whitelist db
-	err = download.ReadFilesAndSaveToDB(tempFiles, whitelist, target.WhiteList)
+	err = download.ReadFilesAndSaveToDB(localFiles, whitelist, target.WhiteList)
 	if err != nil {
 		logger.Error("whitelist read and save error", zap.Error(err))
 	}
 
 	// Read files and save them to the blacklist db
-	err = download.ReadFilesAndSaveToDB(tempFiles, blacklist, target.BlackList)
+	err = download.ReadFilesAndSaveToDB(localFiles, blacklist, target.BlackList)
 	if err != nil {
 		logger.Error("blacklist read and save error", zap.Error(err))
 	}
@@ -80,7 +80,14 @@ func main() {
 		logger.Error("save domains to the file error", zap.Error(err))
 	}
 
-	err = files.DeleteAllFiles(tempFiles...)
+	var toDelete []string
+	for _, tmpFile := range localFiles {
+		if tmpFile.Temp {
+			toDelete = append(toDelete, tmpFile.Path)
+		}
+	}
+
+	err = files.DeleteAllFiles(toDelete...)
 	if err != nil {
 		logger.Debug("temporary files deletion error", zap.Error(err))
 	}

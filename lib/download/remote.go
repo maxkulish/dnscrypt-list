@@ -12,8 +12,16 @@ import (
 	"time"
 )
 
+// LocalFile keeps information about file: path, temp, type
+type LocalFile struct {
+	Path   string
+	Format target.Format
+	Temp   bool
+	Type   target.Type
+}
+
 // GetAndSaveTargets iterate targets and save response body to the temp files
-func GetAndSaveTargets(tempDir string, targets *target.TargetsStore) ([]string, error) {
+func GetAndSaveTargets(tempDir string, targets *target.TargetsStore) ([]LocalFile, error) {
 
 	err := files.MkdirAllIfNotExist(tempDir)
 	if err != nil {
@@ -21,17 +29,24 @@ func GetAndSaveTargets(tempDir string, targets *target.TargetsStore) ([]string, 
 		return nil, err
 	}
 
-	var tempFiles []string
+	var tempFiles []LocalFile
 	var bytesDownloaded int64
 	for i, targ := range targets.Targets {
 
+		// Local target without URL but with Path
 		if targ.URL.String() == "" {
 			if targ.Path != "" {
-				tempFiles = append(tempFiles, targ.Path)
+				tempFiles = append(tempFiles, LocalFile{
+					Path:   targ.Path,
+					Format: targ.Format,
+					Temp:   false,
+					Type:   targ.TargetType,
+				})
 			}
 			continue
 		}
 
+		// Remote target with URL
 		fileName := fmt.Sprintf("%s/%d_%d_%s", tempDir, targ.TargetType, i, targ.URL.Host)
 		fmt.Printf("%d: %s\n", i, targ.URL.String())
 
@@ -47,7 +62,12 @@ func GetAndSaveTargets(tempDir string, targets *target.TargetsStore) ([]string, 
 			logger.Error("temp file saving error", zap.Error(err))
 		}
 		bytesDownloaded += n
-		tempFiles = append(tempFiles, fileName)
+		tempFiles = append(tempFiles, LocalFile{
+			Path:   fileName,
+			Format: targ.Format,
+			Temp:   true,
+			Type:   targ.TargetType,
+		})
 
 		response.Body.Close()
 	}
