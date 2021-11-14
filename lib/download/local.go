@@ -2,6 +2,7 @@ package download
 
 import (
 	"bufio"
+	"github.com/dustin/go-humanize"
 	"github.com/maxkulish/dnscrypt-list/lib/db"
 	"github.com/maxkulish/dnscrypt-list/lib/logger"
 	"github.com/maxkulish/dnscrypt-list/lib/target"
@@ -75,7 +76,7 @@ func ReadFilesAndSaveToDB(tempFiles []LocalFile, conn *db.Conn, targetType targe
 		}
 	}
 
-	logger.Debug("files scanning finished", zap.Int64("total", total))
+	logger.Debug("all files scanned", zap.String("domains", humanize.Comma(total)))
 
 	return err
 }

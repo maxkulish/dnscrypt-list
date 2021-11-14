@@ -75,10 +75,9 @@ func GetAndSaveTargets(tempDir string, targets *target.TargetsStore) ([]LocalFil
 		response.Body.Close()
 	}
 
-	logger.Info("all remote targets downloaded", zap.Int64("size", bytesDownloaded))
+	logger.Info("all remote targets downloaded", zap.String("size", humanize.Bytes(uint64(bytesDownloaded))))
 
 	logger.Info("local files from config added")
-
 	return tempFiles, nil
 }
 

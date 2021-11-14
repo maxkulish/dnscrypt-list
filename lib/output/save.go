@@ -1,7 +1,7 @@
 package output
 
 import (
-	"github.com/maxkulish/byteconv"
+	"github.com/dustin/go-humanize"
 	"github.com/maxkulish/dnscrypt-list/lib/logger"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -37,9 +37,10 @@ func SaveDomainToFile(path string, keys []string) error {
 	}
 
 	logger.Debug(
-		"domain added to the file",
+		"domains added to the file",
 		zap.String("file", path),
-		zap.String("size", byteconv.BytesSize(totalSize, "decimal", 0)))
+		zap.String("size", humanize.Bytes(uint64(totalSize))),
+	)
 
 	return nil
 }

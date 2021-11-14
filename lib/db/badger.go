@@ -2,6 +2,7 @@ package db
 
 import (
 	"github.com/dgraph-io/badger/v3"
+	"github.com/dustin/go-humanize"
 	"github.com/maxkulish/dnscrypt-list/lib/logger"
 	"go.uber.org/zap"
 )
@@ -47,7 +48,10 @@ func (c *Conn) AddBunch(updates map[string]string) error {
 	}
 	err = txn.Commit()
 
-	logger.Debug("bunch saved to the db", zap.Int("total", len(updates)))
+	logger.Debug(
+		"bunch saved to the db",
+		zap.String("domains", humanize.Comma(int64(len(updates)))),
+	)
 	return err
 }
 
