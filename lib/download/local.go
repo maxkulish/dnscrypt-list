@@ -5,11 +5,19 @@ import (
 	"github.com/maxkulish/dnscrypt-list/lib/db"
 	"github.com/maxkulish/dnscrypt-list/lib/logger"
 	"github.com/maxkulish/dnscrypt-list/lib/target"
+	"github.com/maxkulish/dnscrypt-list/lib/validator"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"os"
-	"path"
 	"strconv"
 	"strings"
+)
+
+var (
+	// ErrInvalidDomain an error shows that domain has wrong format or forbidden symbols
+	ErrInvalidDomain = errors.New("Invalid domain")
+	// ErrCommentedLine sould be returned if line has # as a first symbol
+	ErrCommentedLine = errors.New("Commented line")
 )
 
 //ReadFilesAndSaveToDB reads local files and save them to the DB
@@ -25,7 +33,7 @@ func ReadFilesAndSaveToDB(tempFiles []LocalFile, conn *db.Conn, targetType targe
 			continue
 		}
 
-		foundDomain := make(map[string]string)
+		foundDomains := make(map[string]string)
 
 		var fileLines int
 		logger.Debug(
@@ -40,8 +48,14 @@ func ReadFilesAndSaveToDB(tempFiles []LocalFile, conn *db.Conn, targetType targe
 		scanner := bufio.NewScanner(f)
 
 		for scanner.Scan() {
-			domain := scanner.Text()
-			foundDomain[strings.TrimSpace(domain)] = strconv.Itoa(int(targetType))
+			line := scanner.Text()
+
+			domain, err := NormalizedDomain(line)
+			if err != nil {
+				continue
+			}
+
+			foundDomains[domain] = strconv.Itoa(int(targetType))
 			total++
 			fileLines++
 		}
@@ -53,7 +67,7 @@ func ReadFilesAndSaveToDB(tempFiles []LocalFile, conn *db.Conn, targetType targe
 
 		logger.Debug("scanned", zap.Int("lines", fileLines))
 
-		err = conn.AddBunch(foundDomain)
+		err = conn.AddBunch(foundDomains)
 		if err != nil {
 			logger.Debug("")
 		}
@@ -64,20 +78,19 @@ func ReadFilesAndSaveToDB(tempFiles []LocalFile, conn *db.Conn, targetType targe
 	return err
 }
 
-// FilterByTargetType filter file names by prefix
-// []string{"1_2_example.com"}, 1 -> ["1_2_example.com"]
-// []string{"1_2_example.com"}, 2 -> []
-func FilterByTargetType(targetType target.Type, targets ...string) []string {
+// NormalizedDomain cleans symbols and returns valid domain
+func NormalizedDomain(line string) (string, error) {
 
-	var toRead []string
-	for _, tmp := range targets {
+	domain := strings.TrimSpace(line)
 
-		fileName := path.Base(tmp)
-
-		if strings.HasPrefix(fileName, strconv.Itoa(int(targetType))) {
-			toRead = append(toRead, tmp)
-		}
+	switch {
+	case domain[0:1] == "#":
+		return "", ErrCommentedLine
+	case !validator.IsLetter(domain[0:1]):
+		return "", ErrInvalidDomain
+	case !validator.IsValidHost(domain):
+		return "", ErrInvalidDomain
+	default:
+		return domain, nil
 	}
-
-	return toRead
 }

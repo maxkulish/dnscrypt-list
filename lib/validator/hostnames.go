@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+	"unicode"
 )
 
 var (
@@ -45,7 +46,7 @@ func IsURL(urlOrPath string) (bool, error) {
 // google -> false
 func IsValidHost(host string) bool {
 
-	if host == "" {
+	if host == "" || len(host) == 0 || len(host) > 255 {
 		return false
 	}
 
@@ -81,4 +82,16 @@ func IsHostReachable(host string) (bool, error) {
 	defer resp.Body.Close()
 
 	return true, nil
+}
+
+// IsLetter defines if the provided symbol is letter or not
+// IsLetter("1") -> false
+// IsLetter("a") -> true
+func IsLetter(s string) bool {
+	for _, r := range s {
+		if !unicode.IsLetter(r) {
+			return false
+		}
+	}
+	return true
 }
