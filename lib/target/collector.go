@@ -1,7 +1,6 @@
 package target
 
 import (
-	"fmt"
 	"github.com/maxkulish/dnscrypt-list/lib/config"
 	"github.com/maxkulish/dnscrypt-list/lib/files"
 	"github.com/maxkulish/dnscrypt-list/lib/logger"
@@ -55,17 +54,6 @@ func CollectTargets(conf *config.Config) (*TargetsStore, error) {
 		if rawTarget.File != "" {
 			validPath = files.IsPathExist(rawTarget.File)
 		}
-
-		fmt.Printf(
-			"file: %s\nurl: %s\ntype: %s\nformat: %s\nvalidURL:%t\nvalidPath:%t\nnotes: %s\n====>\n",
-			rawTarget.File,
-			rawTarget.URL,
-			rawTarget.Type,
-			rawTarget.Format,
-			validURL,
-			validPath,
-			rawTarget.Notes,
-		)
 
 		if validURL || validPath {
 			target = NewTargetFromRaw(rawTarget)
