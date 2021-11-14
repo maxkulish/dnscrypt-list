@@ -11,10 +11,7 @@ update:
 
 sources:
   file: "sources.yml"
-#  url: "https://raw.githubusercontent.com/maxkulish/dnscrypt-list/main/sources.yml"
 
 output:
-#  whitelist_path: "/etc/dnscrypt-proxy/allowed-names.txt"
-#  blacklist_path: "/etc/dnscrypt-proxy/blacklist-domains.txt"
   whitelist_path: "/tmp/dnscrypt/allowed-names.txt"
   blacklist_path: "/tmp/dnscrypt/blacklist-domains.txt"

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/dustin/go-humanize"
 	"github.com/maxkulish/dnscrypt-list/lib/config"
 	"github.com/maxkulish/dnscrypt-list/lib/db"
 	"github.com/maxkulish/dnscrypt-list/lib/download"
@@ -11,12 +12,16 @@ import (
 	"github.com/maxkulish/dnscrypt-list/lib/target"
 	"go.uber.org/zap"
 	"os"
+	"time"
 )
 
 // BuildVersion contains the version of the application
 var BuildVersion string
 
 func main() {
+
+	start := time.Now()
+
 	conf, err := config.Get()
 	if err != nil {
 		fmt.Println(err)
@@ -64,8 +69,10 @@ func main() {
 		logger.Error("blacklist read and save error", zap.Error(err))
 	}
 
+	var domainCounter int64 // count how many domain collected
 	// Read whitelist from the DB and save to the output file
 	keys := whitelist.GetAllKeys()
+	domainCounter += int64(len(keys))
 
 	err = output.SaveDomainToFile(conf.Output.Whitelist, keys)
 	if err != nil {
@@ -74,6 +81,7 @@ func main() {
 
 	// Read blacklist from the DB and save to the output file
 	keys = blacklist.GetAllKeys()
+	domainCounter += int64(len(keys))
 
 	err = output.SaveDomainToFile(conf.Output.Blacklist, keys)
 	if err != nil {
@@ -91,4 +99,9 @@ func main() {
 	if err != nil {
 		logger.Debug("temporary files deletion error", zap.Error(err))
 	}
+
+	logger.Info(
+		fmt.Sprintf("elapsed: %.2fs", time.Since(start).Seconds()),
+		zap.Int("files", len(localFiles)),
+		zap.String("domains", humanize.Comma(domainCounter)))
 }

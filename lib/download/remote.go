@@ -2,6 +2,7 @@ package download
 
 import (
 	"fmt"
+	"github.com/dustin/go-humanize"
 	"github.com/maxkulish/dnscrypt-list/lib/files"
 	"github.com/maxkulish/dnscrypt-list/lib/logger"
 	"github.com/maxkulish/dnscrypt-list/lib/target"
@@ -56,7 +57,10 @@ func GetAndSaveTargets(tempDir string, targets *target.TargetsStore) ([]LocalFil
 		}
 
 		n, err := io.Copy(tempFile, response.Body)
-		logger.Debug("file saved", zap.String("file", fileName), zap.Int64("size", n))
+		logger.Debug(
+			"file saved",
+			zap.String("file", fileName),
+			zap.String("size", humanize.Bytes(uint64(n))))
 		if err != nil {
 			logger.Error("temp file saving error", zap.Error(err))
 		}
