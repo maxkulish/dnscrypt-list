@@ -1,5 +1,9 @@
 ---
 targets:
+  - file: "/opt/dnscrypt-proxy/whitelist-private.txt"
+    format: domain
+    type: "whitelist"
+    notes: "my private domains to allow even if some of them are on the blacklist"
   - url: "https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADomains.txt"
     format: domain
     type: "blacklist"
@@ -11,7 +15,97 @@ targets:
     format: host
     type: "blacklist"
     notes: "Joe Wein Fighting spam and scams on the Internet"
-  - file: "/opt/dnscrypt-proxy/whitelist-private.txt"
+  - url: "https://phishing.army/download/phishing_army_blocklist.txt"
     format: domain
-    type: "whitelist"
-    notes: "my private domains to allow even if some of them are on the blacklist"
+    type: "blacklist"
+    notes: "Phishing Army | The Blocklist to filter Phishing"
+  - url: "https://raw.githubusercontent.com/Spam404/lists/master/main-blacklist.txt"
+    format: domain
+    type: "blacklist"
+  - url: "https://joewein.net/dl/bl/dom-bl-base.txt"
+    format: domain
+    type: "blacklist"
+  - url: "https://raw.githubusercontent.com/maxkulish/shallalist/master/gamble/domains"
+    format: domain
+    type: "blacklist"
+    notes: "gambling, casinos"
+  - url: "https://raw.githubusercontent.com/maxkulish/shallalist/master/hacking/domains"
+    format: domain
+    type: "blacklist"
+    notes: "hacking"
+  - url: "https://raw.githubusercontent.com/maxkulish/shallalist/master/porn/domains"
+    format: domain
+    type: "blacklist"
+    notes: "porn"
+  - url: "https://raw.githubusercontent.com/maxkulish/shallalist/master/redirector/domains"
+    format: domain
+    type: "blacklist"
+    notes: "redirectors"
+  - url: "https://raw.githubusercontent.com/maxkulish/shallalist/master/spyware/domains"
+    format: domain
+    type: "blacklist"
+    notes: "spyware"
+  - url: "https://raw.githubusercontent.com/maxkulish/shallalist/master/tracker/domains"
+    format: domain
+    type: "blacklist"
+    notes: "spyware"
+  - url: "https://raw.githubusercontent.com/maxkulish/shallalist/master/violence/domains"
+    format: domain
+    type: "blacklist"
+    notes: "violence"
+  - url: "https://raw.githubusercontent.com/maxkulish/shallalist/master/aggressive/domains"
+    format: domain
+    type: "blacklist"
+    notes: "aggressive"
+  - url: "https://raw.githubusercontent.com/maxkulish/shallalist/master/costtraps/domains"
+    format: domain
+    type: "blacklist"
+    notes: "costtraps"
+  - url: "https://www.botvrij.eu/data/ioclist.domain.raw"
+    format: domain
+    type: "blacklist"
+    notes: "The botvrij.eu data"
+  - url: "https://www.botvrij.eu/data/ioclist.hostname.raw"
+    format: domain
+    type: "blacklist"
+    notes: "The botvrij.eu data"
+  - url: "https://raw.githubusercontent.com/stamparm/blackbook/master/blackbook.txt"
+    format: domain
+    type: "blacklist"
+    notes: "https://github.com/stamparm/blackbook"
+  - url: "https://www.stopforumspam.com/downloads/toxic_domains_whole.txt"
+    format: domain
+    type: "blacklist"
+    notes: "stopforumspam.com"
+  - url: "https://kriskintel.com/feeds/ktip_malicious_domains.txt"
+    format: domain
+    type: "blacklist"
+    notes: "List of malicious domains"
+  - url: "https://kriskintel.com/feeds/ktip_ransomware_feeds.txt"
+    format: domain
+    type: "blacklist"
+    notes: "List of IoCs being utilized by Ransomwares"
+  - url: "https://rescure.me/rescure_domain_blacklist.txt"
+    format: domain
+    type: "blacklist"
+    notes: "Rescure Cyber Threat Intelligence Feeds Malicious Domain Blacklist"
+  - url: "https://hole.cert.pl/domains/domains.txt"
+    format: domain
+    type: "blacklist"
+    notes: "hole.cert.pl"
+  - url: "https://osint.digitalside.it/Threat-Intel/lists/latestdomains.txt"
+    format: domain
+    type: "blacklist"
+    notes: "osint.digitalside.it"
+  - url: "https://www.usom.gov.tr/url-list.txt"
+    format: domain
+    type: "blacklist"
+    notes: "www.usom.gov.tr"
+  - url: "https://raw.githubusercontent.com/AmnestyTech/investigations/master/2021-10-07_donot/domains.txt"
+    format: domain
+    type: "blacklist"
+    notes: "Hackers-for-hire in West Africa"
+  - url: "https://raw.githubusercontent.com/AmnestyTech/investigations/master/2021-07-18_nso/domains.txt"
+    format: domain
+    type: "blacklist"
+    notes: "NSO Group Pegasus Indicator of Compromise"

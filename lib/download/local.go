@@ -50,6 +50,8 @@ func ReadFilesAndSaveToDB(tempFiles []LocalFile, conn *db.Conn, targetType targe
 		for scanner.Scan() {
 			line := scanner.Text()
 
+			// TODO: collect ips
+			// TODO: work with host files: ip domain
 			domain, err := NormalizedDomain(line)
 			if err != nil {
 				continue
@@ -84,6 +86,8 @@ func NormalizedDomain(line string) (string, error) {
 	domain := strings.TrimSpace(line)
 
 	switch {
+	case len(domain) == 0:
+		return "", ErrInvalidDomain
 	case domain[0:1] == "#":
 		return "", ErrCommentedLine
 	case !validator.IsLetter(domain[0:1]):
