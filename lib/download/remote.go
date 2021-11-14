@@ -48,7 +48,6 @@ func GetAndSaveTargets(tempDir string, targets *target.TargetsStore) ([]LocalFil
 
 		// Remote target with URL
 		fileName := fmt.Sprintf("%s/%d_%d_%s", tempDir, targ.TargetType, i, targ.URL.Host)
-		fmt.Printf("%d: %s\n", i, targ.URL.String())
 
 		response := GetRemote(targ.URL)
 		tempFile, err := files.CreateFileOrTruncate(fileName)
