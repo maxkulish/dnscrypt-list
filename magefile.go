@@ -20,7 +20,10 @@ const (
 
 // Default target to run when none is specified
 // If not set, running mage will list available targets
-var Default = Build
+var (
+	Default = Build
+	cmdPath = fmt.Sprintf("%s/%s/main.go", cmdDir, project)
+)
 
 // Build compiles and lints the api-monitor daemon version
 func Build() error {
@@ -37,13 +40,35 @@ func Build() error {
 	)
 
 	cliPath := fmt.Sprintf("%s/macos/%s", binDir, project)
-	cmdPath := fmt.Sprintf("%s/%s/main.go", cmdDir, project)
 
 	return sh.RunWithV(
 		macBuild,
 		"go", "build", "-ldflags", ldflags,
 		"-o", cliPath, cmdPath,
 	)
+}
+
+func BuildLinux() error {
+	mg.Deps(Lint)
+	mg.Deps(Test)
+
+	macBuild := make(map[string]string)
+	macBuild["GOOS"] = "linux"
+	macBuild["GOARCH"] = "amd64"
+
+	ldflags := fmt.Sprintf(
+		`-w -s -X main.BuildVersion=%s`,
+		appVersion,
+	)
+
+	cliPath := fmt.Sprintf("%s/linux/%s", binDir, project)
+
+	return sh.RunWithV(
+		macBuild,
+		"go", "build", "-ldflags", ldflags,
+		"-o", cliPath, cmdPath,
+	)
+
 }
 
 // Lint check the code
