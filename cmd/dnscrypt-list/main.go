@@ -15,8 +15,8 @@ import (
 	"time"
 )
 
-// BuildVersion contains the version of the application
-var BuildVersion string
+// version contains the version of the application
+var version = "0.0.0-src" // set via ldflags
 
 func main() {
 
@@ -28,7 +28,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	logger.Info("dnscypt-list starting", zap.String("version", BuildVersion))
+	logger.Info("dnscypt-list starting", zap.String("version", version))
 
 	// create whitelist db
 	whitelist, err := db.NewConn(conf.WhiteListDB)

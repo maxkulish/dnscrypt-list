@@ -1,14 +1,17 @@
-# This is an example .goreleaser.yml file with some sensible defaults.
-# Make sure to check the documentation at https://goreleaser.com
+project_name: "dnscrypt-list"
 before:
   hooks:
-    # You may remove this if you don't use go modules.
     - go mod tidy
-    # you may remove this if you don't need go generate
     - go generate ./...
 builds:
-  - env:
+  - main: .cmd/dnscrypt-list/main.go
+    env:
       - CGO_ENABLED=0
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+    gcflags:
+      - "all=-trimpath={{.Env.GOPATH}}"
     goos:
       - linux
       - windows
@@ -21,6 +24,7 @@ archives:
       386: i386
       amd64: x86_64
 checksum:
+  algorithm: sha256
   name_template: 'checksums.txt'
 snapshot:
   name_template: "{{ incpatch .Version }}-next"

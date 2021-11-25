@@ -14,7 +14,7 @@ import (
 const (
 	binDir     = "./bin"
 	project    = "dnscrypt-list"
-	appVersion = "0.1"
+	appVersion = "0.1.0"
 	cmdDir     = "./cmd"
 )
 
@@ -35,7 +35,7 @@ func Build() error {
 	macBuild["GOARCH"] = "amd64"
 
 	ldflags := fmt.Sprintf(
-		`-w -s -X main.BuildVersion=%s`,
+		`-w -s -X main.varsion=%s`,
 		appVersion,
 	)
 
@@ -57,7 +57,7 @@ func BuildLinux() error {
 	macBuild["GOARCH"] = "amd64"
 
 	ldflags := fmt.Sprintf(
-		`-w -s -X main.BuildVersion=%s`,
+		`-w -s -X main.version=%s`,
 		appVersion,
 	)
 
