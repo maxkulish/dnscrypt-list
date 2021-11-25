@@ -21,7 +21,6 @@ archives:
       darwin: Darwin
       linux: Linux
       windows: Windows
-      386: i386
       amd64: x86_64
 checksum:
   algorithm: sha256
@@ -30,6 +29,7 @@ snapshot:
   name_template: "{{ incpatch .Version }}-next"
 changelog:
   sort: asc
+  use: github
   filters:
     exclude:
       - '^docs:'
