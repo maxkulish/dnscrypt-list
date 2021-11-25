@@ -4,7 +4,7 @@ before:
     - go mod tidy
     - go generate ./...
 builds:
-  - main: .cmd/dnscrypt-list/main.go
+  - main: ./cmd/dnscrypt-list/main.go
     env:
       - CGO_ENABLED=0
     ldflags:
