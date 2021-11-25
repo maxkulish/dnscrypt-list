@@ -12,8 +12,6 @@ builds:
     ldflags:
       - -s -w
       - -X main.version={{.Version}}
-    gcflags:
-      - "all=-trimpath={{.Env.GOPATH}}"
     goos:
       - linux
       - darwin
