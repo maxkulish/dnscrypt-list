@@ -29,3 +29,44 @@ Folder for Badger DB will be created after the first start
 ```
 
 You can define another path in `config.yml`
+
+## Build
+
+### Local development
+
+To build local version you need to install `goreleaser`
+
+macOS
+
+```shell
+brew install goreleaser/tap/goreleaser
+brew install goreleaser
+```
+
+Build binary for the current OS
+
+```shell
+make build-local
+```
+
+output
+
+```shell
+dist
+├── config.yaml
+└── dnscrypt-list_darwin_amd64
+    └── dnscrypt-list
+
+```
+
+To run the binary with the `config.yml` in the current folder
+
+```shell
+./dist/dnscrypt-list_darwin_amd64/dnscrypt-list
+```
+
+or specify path to the config file
+
+```shell
+./dist/dnscrypt-list_darwin_amd64/dnscrypt-list --config=./dir/config.yml
+```

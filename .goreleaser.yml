@@ -43,5 +43,12 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
+release:
+  github:
+    owner: maxkulish
+    name: dnscrypt-list
 
+  draft: true  # will not auto-publish the release.
 
+  header: |
+    ## DNSCrypt-list release ({{ .Date }})
