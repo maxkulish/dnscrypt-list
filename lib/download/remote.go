@@ -47,23 +47,19 @@ func GetAndSaveTargets(tempDir string, targets *target.TargetsStore) ([]LocalFil
 			continue
 		}
 
-		// Remote target with URL
+		// prepare local file name: tempDir + TargetType + Host
+		// example: /tmp/dnscrypt/2_22_rescure.me
 		fileName := fmt.Sprintf("%s/%d_%d_%s", tempDir, targ.TargetType, i, targ.URL.Host)
 
+		// Download body of the file
 		response := GetRemote(targ.URL)
-		tempFile, err := files.CreateFileOrTruncate(fileName)
-		if err != nil {
-			logger.Debug("temp file creation", zap.Error(err))
-		}
 
-		n, err := io.Copy(tempFile, response.Body)
-		logger.Debug(
-			"file saved",
-			zap.String("file", fileName),
-			zap.String("size", humanize.Bytes(uint64(n))))
+		// Save response body to the temp file
+		n, err := SaveToFile(fileName, response.Body)
 		if err != nil {
 			logger.Error("temp file saving error", zap.Error(err))
 		}
+
 		bytesDownloaded += n
 		tempFiles = append(tempFiles, LocalFile{
 			Path:   fileName,
@@ -100,4 +96,31 @@ func GetRemote(remoteURL *url.URL) *http.Response {
 	}
 
 	return resp
+}
+
+// SaveToFile copy response body to the file
+// if local file not exist, file will be created
+// string, *http.Response.Body -> err, int64
+func SaveToFile(fileName string, body io.ReadCloser) (int64, error) {
+
+	if fileName == "" {
+		logger.Error("file name is empty", zap.String("file", fileName))
+		return 0, nil
+	}
+
+	tempFile, err := files.CreateFileOrTruncate(fileName)
+	if err != nil {
+		logger.Debug("temp file creation", zap.Error(err))
+	}
+
+	n, err := io.Copy(tempFile, body)
+	logger.Debug(
+		"file saved",
+		zap.String("file", fileName),
+		zap.String("size", humanize.Bytes(uint64(n))))
+	if err != nil {
+		return 0, err
+	}
+
+	return n, nil
 }
