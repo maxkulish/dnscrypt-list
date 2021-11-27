@@ -28,7 +28,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	logger.Info("dnscypt-list starting", zap.String("version", version))
+	logger.Info("dnscrypt-list starting", zap.String("version", version))
 
 	// create whitelist db
 	whitelist, err := db.NewConn(conf.WhiteListDB)
@@ -44,17 +44,17 @@ func main() {
 	}
 	defer blacklist.Close()
 
-	logger.Info("collecting targets ...")
-	targets, err := target.CollectTargets(conf)
+	logger.Info("collecting remoteTargets ...")
+	remoteTargets, err := target.CollectTargets(conf)
 	if err != nil {
-		logger.Error("targets error", zap.Error(err))
+		logger.Error("remoteTargets error", zap.Error(err))
 	}
 
-	logger.Info("found targets", zap.Int("total", targets.Length()))
+	logger.Info("found remoteTargets", zap.Int("total", remoteTargets.Length()))
 
-	localFiles, err := download.GetAndSaveTargets(conf.TempDir, targets)
+	localFiles, err := download.GetAndSaveTargets(conf.TempDir, remoteTargets)
 	if err != nil {
-		logger.Error("get and save targets error", zap.Error(err))
+		logger.Error("get and save remoteTargets error", zap.Error(err))
 	}
 
 	// Read files and save them to the whitelist db
