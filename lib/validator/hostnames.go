@@ -42,6 +42,7 @@ func IsURL(urlOrPath string) (bool, error) {
 }
 
 // IsValidHost checks if host is FQDN
+// produce true if the host is FQDN
 // google.com -> true
 // google -> false
 func IsValidHost(host string) bool {
@@ -60,6 +61,7 @@ func IsValidHost(host string) bool {
 }
 
 // IsHostReachable checks if the host is reachable by sending tcp request
+// produce true if the host is reachable
 // google.com -> true, nil
 // asdggatil -> false, error
 func IsHostReachable(host string) (bool, error) {

@@ -1,6 +1,7 @@
 package download
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/dustin/go-humanize"
 	"github.com/maxkulish/dnscrypt-list/lib/files"
@@ -52,10 +53,10 @@ func GetAndSaveTargets(tempDir string, targets *target.TargetsStore) ([]LocalFil
 		fileName := fmt.Sprintf("%s/%d_%d_%s", tempDir, targ.TargetType, i, targ.URL.Host)
 
 		// Download body of the file
-		response := GetRemote(targ.URL)
+		data := GetRemote(targ.URL)
 
 		// Save response body to the temp file
-		n, err := SaveToFile(fileName, response.Body)
+		n, err := SaveToFile(fileName, data)
 		if err != nil {
 			logger.Error("temp file saving error", zap.Error(err))
 		}
@@ -68,7 +69,6 @@ func GetAndSaveTargets(tempDir string, targets *target.TargetsStore) ([]LocalFil
 			Type:   targ.TargetType,
 		})
 
-		response.Body.Close()
 	}
 
 	logger.Info("all remote targets downloaded", zap.String("size", humanize.Bytes(uint64(bytesDownloaded))))
@@ -78,7 +78,7 @@ func GetAndSaveTargets(tempDir string, targets *target.TargetsStore) ([]LocalFil
 }
 
 //GetRemote sends GET response and save resp.Body
-func GetRemote(remoteURL *url.URL) *http.Response {
+func GetRemote(remoteURL *url.URL) io.Reader {
 
 	client := &http.Client{
 		Timeout: 20 * time.Second,
@@ -93,15 +93,26 @@ func GetRemote(remoteURL *url.URL) *http.Response {
 	resp, err := client.Do(req)
 	if err != nil {
 		logger.Error("http.Get url error", zap.Error(err))
+		return nil
+	}
+	defer resp.Body.Close()
+
+	var buf bytes.Buffer
+	written, err := io.Copy(&buf, resp.Body)
+	if err != nil {
+		logger.Error("copying response body error", zap.Error(err))
+		return nil
 	}
 
-	return resp
+	logger.Debug("response body copied", zap.String("size", humanize.Bytes(uint64(written))))
+
+	return &buf
 }
 
 // SaveToFile copy response body to the file
 // if local file not exist, file will be created
 // string, *http.Response.Body -> err, int64
-func SaveToFile(fileName string, body io.ReadCloser) (int64, error) {
+func SaveToFile(fileName string, body io.Reader) (int64, error) {
 
 	if fileName == "" {
 		logger.Error("file name is empty", zap.String("file", fileName))
