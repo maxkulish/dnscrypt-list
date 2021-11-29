@@ -97,6 +97,8 @@ func GetRemote(remoteURL *url.URL) io.Reader {
 	}
 	defer resp.Body.Close()
 
+	// response body is copied to the buffer (memory)
+	// possible problem if the file is too large to keep in memory
 	var buf bytes.Buffer
 	written, err := io.Copy(&buf, resp.Body)
 	if err != nil {
