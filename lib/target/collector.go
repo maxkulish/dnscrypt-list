@@ -56,7 +56,7 @@ func CollectTargets(conf *config.Config) (*TargetsStore, error) {
 		}
 
 		if validURL || validPath {
-			target = NewTargetFromRaw(rawTarget)
+			target = NewTargetFromRaw(conf.TempDir, rawTarget)
 		} else {
 			logger.Error("no valid targets found", zap.Error(ErrorValidationTarget))
 			continue

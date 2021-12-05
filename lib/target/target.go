@@ -1,8 +1,14 @@
 package target
 
 import (
+	"bytes"
+	"encoding/base64"
+	"fmt"
+	"github.com/google/uuid"
 	"github.com/maxkulish/dnscrypt-list/lib/config"
 	"net/url"
+	"sync"
+	"time"
 )
 
 // Format types of targets
@@ -29,14 +35,22 @@ const (
 	BlackList
 )
 
+const (
+	getTimeout = 5 * time.Second
+)
+
 // Target keeps information about a target
 type Target struct {
+	TargetID   string
 	RawURL     string
 	TargetType Type
 	URL        *url.URL
 	Path       string
+	TempFile   string
 	Format     Format
 	Notes      string
+	Data       bytes.Buffer
+	*sync.Mutex
 }
 
 // TypeString returns string representation of target Type
@@ -64,14 +78,21 @@ func (t *Target) NormalizeURL() {
 
 // NewTargetFromRaw creates Target instance
 // NewTargetFromRaw("blacklist", &rawTarget) -> *Target
-func NewTargetFromRaw(rawTarget *config.RawTarget) *Target {
+func NewTargetFromRaw(tempDir string, rawTarget *config.RawTarget) *Target {
+
+	// prepare local file name: tempDir + TargetType + Host
+	// example: /tmp/dnscrypt/2_22_rescure.me
+
 	t := &Target{
+		TargetID:   uuid.New().String(),
 		RawURL:     rawTarget.URL,
 		Path:       rawTarget.File,
 		Format:     getFormat(rawTarget.Format),
 		TargetType: getType(rawTarget.Type),
 	}
 	t.NormalizeURL()
+	t.TempFile = fmt.Sprintf("%s/%s", tempDir, t.TargetID)
+
 	return t
 }
 
@@ -107,4 +128,11 @@ func getType(rawType string) Type {
 	default:
 		return 0
 	}
+}
+
+// StringToBase64 produce base64 encoding for URL or Path
+// string -> string
+// StringToBase64("hello") -> "aGVsbG8="
+func StringToBase64(s string) string {
+	return base64.URLEncoding.EncodeToString([]byte(s))
 }

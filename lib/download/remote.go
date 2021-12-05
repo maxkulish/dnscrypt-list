@@ -1,17 +1,20 @@
 package download
 
 import (
-	"bytes"
-	"fmt"
 	"github.com/dustin/go-humanize"
-	"github.com/maxkulish/dnscrypt-list/lib/files"
+	"github.com/google/uuid"
 	"github.com/maxkulish/dnscrypt-list/lib/logger"
 	"github.com/maxkulish/dnscrypt-list/lib/target"
 	"go.uber.org/zap"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
+	"sync"
 	"time"
+)
+
+const (
+	getTimeout = 5 * time.Second
 )
 
 // LocalFile keeps information about file: path, temp, type
@@ -22,23 +25,48 @@ type LocalFile struct {
 	Type   target.Type
 }
 
-// GetAndSaveTargets iterate targets and save response body to the temp files
-func GetAndSaveTargets(tempDir string, targets *target.TargetsStore) ([]LocalFile, error) {
+// Temp structure which keeps list of local files and map of responses
+type Temp struct {
+	Storage map[string][]byte
+	Files   []LocalFile
+	Errors  []error
+	mu      sync.Mutex
+}
 
-	err := files.MkdirAllIfNotExist(tempDir)
-	if err != nil {
-		logger.Error("temp dir creation error", zap.Error(err))
-		return nil, err
+// NewTemp create Temp instance and returns pointer to the new struct
+func NewTemp() *Temp {
+	return &Temp{
+		Storage: make(map[string][]byte),
+	}
+}
+
+// AddToStorage adds concurrently []byte to the Storage map
+func (t *Temp) AddToStorage(targetID string, data []byte) {
+
+	// create new uuid if targetID is empty
+	if targetID == "" {
+		targetID = uuid.New().String()
 	}
 
-	var tempFiles []LocalFile
-	var bytesDownloaded int64
-	for i, targ := range targets.Targets {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	t.Storage[targetID] = append(t.Storage[targetID], data...)
+}
+
+// GetAndSaveTargets iterate targets and save response body to the temp files
+func GetAndSaveTargets(targets *target.TargetsStore) ([]LocalFile, error) {
+
+	wg := &sync.WaitGroup{}
+
+	temp := NewTemp()
+
+	// Download all remote files to memory
+	for _, targ := range targets.Targets {
 
 		// Local target without URL but with Path
 		if targ.URL.String() == "" {
 			if targ.Path != "" {
-				tempFiles = append(tempFiles, LocalFile{
+				temp.Files = append(temp.Files, LocalFile{
 					Path:   targ.Path,
 					Format: targ.Format,
 					Temp:   false,
@@ -48,22 +76,12 @@ func GetAndSaveTargets(tempDir string, targets *target.TargetsStore) ([]LocalFil
 			continue
 		}
 
-		// prepare local file name: tempDir + TargetType + Host
-		// example: /tmp/dnscrypt/2_22_rescure.me
-		fileName := fmt.Sprintf("%s/%d_%d_%s", tempDir, targ.TargetType, i, targ.URL.Host)
-
 		// Download body of the file
-		data := GetRemote(targ.URL)
+		wg.Add(1)
+		go temp.GetRemote(wg, targ.TargetID, targ.URL)
 
-		// Save response body to the temp file
-		n, err := SaveToFile(fileName, data)
-		if err != nil {
-			logger.Error("temp file saving error", zap.Error(err))
-		}
-
-		bytesDownloaded += n
-		tempFiles = append(tempFiles, LocalFile{
-			Path:   fileName,
+		temp.Files = append(temp.Files, LocalFile{
+			Path:   targ.TempFile,
 			Format: targ.Format,
 			Temp:   true,
 			Type:   targ.TargetType,
@@ -71,17 +89,34 @@ func GetAndSaveTargets(tempDir string, targets *target.TargetsStore) ([]LocalFil
 
 	}
 
-	logger.Info("all remote targets downloaded", zap.String("size", humanize.Bytes(uint64(bytesDownloaded))))
+	wg.Wait()
+
+	// Save response body to the temp file
+	for _, targ := range targets.Targets {
+
+		n, err := SaveToFile(targ.TempFile, temp.Storage[targ.TargetID])
+		if err != nil {
+			logger.Error("temp file saving error", zap.Error(err))
+		}
+		logger.Debug(
+			"saved data to the tempFile",
+			zap.Int("bytes", n),
+			zap.String("file", targ.TempFile))
+	}
 
 	logger.Info("local files from config added")
-	return tempFiles, nil
+	return temp.Files, nil
 }
 
 //GetRemote sends GET response and save resp.Body
-func GetRemote(remoteURL *url.URL) io.Reader {
+func (t *Temp) GetRemote(wg *sync.WaitGroup, targID string, remoteURL *url.URL) {
+
+	if wg != nil {
+		defer wg.Done()
+	}
 
 	client := &http.Client{
-		Timeout: 20 * time.Second,
+		Timeout: getTimeout,
 	}
 
 	// prepare request
@@ -92,48 +127,45 @@ func GetRemote(remoteURL *url.URL) io.Reader {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		logger.Error("http.Get url error", zap.Error(err))
-		return nil
+		t.Errors = append(t.Errors, err)
+		logger.Debug("http.Get url error", zap.Error(err))
+		return
 	}
 	defer resp.Body.Close()
 
 	// response body is copied to the buffer (memory)
 	// possible problem if the file is too large to keep in memory
-	var buf bytes.Buffer
-	written, err := io.Copy(&buf, resp.Body)
+
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		logger.Error("copying response body error", zap.Error(err))
-		return nil
+		return
 	}
 
-	logger.Debug("response body copied", zap.String("size", humanize.Bytes(uint64(written))))
+	// AddToStorage append response bodies to the temprorary storage
+	t.AddToStorage(targID, body)
 
-	return &buf
+	return
 }
 
 // SaveToFile copy response body to the file
 // if local file not exist, file will be created
-// string, *http.Response.Body -> err, int64
-func SaveToFile(fileName string, body io.Reader) (int64, error) {
+// string, *http.Response.Body -> int64, err
+func SaveToFile(fileName string, data []byte) (int, error) {
 
 	if fileName == "" {
 		logger.Error("file name is empty", zap.String("file", fileName))
 		return 0, nil
 	}
 
-	tempFile, err := files.CreateFileOrTruncate(fileName)
-	if err != nil {
-		logger.Debug("temp file creation", zap.Error(err))
-	}
-
-	n, err := io.Copy(tempFile, body)
+	err := ioutil.WriteFile(fileName, data, 0644)
 	logger.Debug(
 		"file saved",
 		zap.String("file", fileName),
-		zap.String("size", humanize.Bytes(uint64(n))))
+		zap.String("size", humanize.Bytes(uint64(len(data)))))
 	if err != nil {
 		return 0, err
 	}
 
-	return n, nil
+	return len(data), nil
 }

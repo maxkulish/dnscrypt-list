@@ -28,6 +28,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Create temp dir if not exist
+	err = files.MkdirAllIfNotExist(conf.TempDir)
+	if err != nil {
+		logger.Error("temp dir creation error", zap.Error(err))
+	}
+
 	logger.Info("dnscrypt-list starting", zap.String("version", version))
 
 	// create whitelist db
@@ -52,7 +58,7 @@ func main() {
 
 	logger.Info("found remoteTargets", zap.Int("total", remoteTargets.Length()))
 
-	localFiles, err := download.GetAndSaveTargets(conf.TempDir, remoteTargets)
+	localFiles, err := download.GetAndSaveTargets(remoteTargets)
 	if err != nil {
 		logger.Error("get and save remoteTargets error", zap.Error(err))
 	}
