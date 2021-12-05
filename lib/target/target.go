@@ -8,7 +8,6 @@ import (
 	"github.com/maxkulish/dnscrypt-list/lib/config"
 	"net/url"
 	"sync"
-	"time"
 )
 
 // Format types of targets
@@ -33,10 +32,6 @@ const (
 	WhiteList Type = iota + 1
 	// BlackList targets to block
 	BlackList
-)
-
-const (
-	getTimeout = 5 * time.Second
 )
 
 // Target keeps information about a target
