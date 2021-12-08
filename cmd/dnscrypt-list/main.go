@@ -9,6 +9,7 @@ import (
 	"github.com/maxkulish/dnscrypt-list/lib/files"
 	"github.com/maxkulish/dnscrypt-list/lib/logger"
 	"github.com/maxkulish/dnscrypt-list/lib/output"
+	"github.com/maxkulish/dnscrypt-list/lib/systemd"
 	"github.com/maxkulish/dnscrypt-list/lib/target"
 	"go.uber.org/zap"
 	"os"
@@ -105,6 +106,12 @@ func main() {
 	if err != nil {
 		logger.Debug("temporary files deletion error", zap.Error(err))
 	}
+
+	err = systemd.RestartSystemdService("dnscrypt-proxy")
+	if err != nil {
+		logger.Debug("dnscrypt-proxy.service restart error", zap.Error(err))
+	}
+	logger.Info("dnscrypt-proxy.service restarted")
 
 	logger.Info(
 		fmt.Sprintf("elapsed: %.2fs", time.Since(start).Seconds()),
