@@ -52,9 +52,9 @@ func BuildLinux() error {
 	mg.Deps(Lint)
 	mg.Deps(Test)
 
-	macBuild := make(map[string]string)
-	macBuild["GOOS"] = "linux"
-	macBuild["GOARCH"] = "amd64"
+	linuxBuild := make(map[string]string)
+	linuxBuild["GOOS"] = "linux"
+	linuxBuild["GOARCH"] = "amd64"
 
 	ldflags := fmt.Sprintf(
 		`-w -s -X main.version=%s`,
@@ -64,7 +64,7 @@ func BuildLinux() error {
 	cliPath := fmt.Sprintf("%s/linux/%s", binDir, project)
 
 	return sh.RunWithV(
-		macBuild,
+		linuxBuild,
 		"go", "build", "-ldflags", ldflags,
 		"-o", cliPath, cmdPath,
 	)
