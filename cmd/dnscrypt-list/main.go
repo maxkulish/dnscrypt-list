@@ -30,7 +30,7 @@ func main() {
 	}
 
 	// Create temp dir if not exist
-	err = files.MkdirAllIfNotExist(conf.TempDir)
+	err = files.MkdirAllIfNotExist(conf.TempDir, os.FileMode(0750))
 	if err != nil {
 		logger.Error("temp dir creation error", zap.Error(err))
 	}

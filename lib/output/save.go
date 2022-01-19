@@ -25,7 +25,11 @@ func SaveDomainToFile(path string, keys []string) error {
 		logger.Error("output file creation error", zap.Error(err), zap.String("file", path))
 		return nil
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			logger.Error("error closing file: %s\n", zap.Error(err))
+		}
+	}()
 
 	var totalSize float64
 	for _, k := range keys {

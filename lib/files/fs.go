@@ -25,12 +25,12 @@ func CreateFileIfNotExist(path string) error {
 }
 
 // MkdirAllIfNotExist creates the given path dir if it isn't exist.
-func MkdirAllIfNotExist(path string) error {
+func MkdirAllIfNotExist(path string, perm os.FileMode) error {
 	if IsPathExist(path) {
 		return nil
 	}
 
-	return os.MkdirAll(path, 0755)
+	return os.MkdirAll(path, perm)
 }
 
 // IsPathExist returns whether the given path exists.

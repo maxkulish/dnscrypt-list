@@ -3,6 +3,7 @@ package config
 import (
 	"flag"
 	"github.com/maxkulish/dnscrypt-list/lib/logger"
+	"go.uber.org/zap"
 	"io/ioutil"
 	"os"
 	"time"
@@ -81,7 +82,11 @@ func load(file string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			logger.Error("error closing file: %s\n", zap.Error(err))
+		}
+	}()
 
 	b, err := ioutil.ReadAll(f)
 	if err != nil {
@@ -103,7 +108,11 @@ func loadSource(file string) (*Sources, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			logger.Error("error closing file: %s\n", zap.Error(err))
+		}
+	}()
 
 	b, err := ioutil.ReadAll(f)
 	if err != nil {

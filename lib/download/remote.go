@@ -9,12 +9,14 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"sync"
 	"time"
 )
 
 const (
-	getTimeout = 5 * time.Second
+	getTimeout   = 5 * time.Second
+	tempFilePerm = os.FileMode(0600)
 )
 
 // LocalFile keeps information about file: path, temp, type
@@ -158,7 +160,7 @@ func SaveToFile(fileName string, data []byte) (int, error) {
 		return 0, nil
 	}
 
-	err := ioutil.WriteFile(fileName, data, 0644)
+	err := ioutil.WriteFile(fileName, data, tempFilePerm)
 	logger.Debug(
 		"file saved",
 		zap.String("file", fileName),

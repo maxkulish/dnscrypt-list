@@ -44,7 +44,11 @@ func ReadFilesAndSaveToDB(tempFiles []LocalFile, conn *db.Conn, targetType targe
 		if err != nil {
 			logger.Debug("open file error", zap.Error(err))
 		}
-		defer f.Close()
+		defer func() {
+			if err := f.Close(); err != nil {
+				logger.Error("error closing file: %s\n", zap.Error(err))
+			}
+		}()
 
 		scanner := bufio.NewScanner(f)
 
