@@ -33,35 +33,35 @@ func TestGetConfig(t *testing.T) {
 		},
 		SourceList: &Sources{
 			Targets: []*RawTarget{
-				&RawTarget{
+				{
 					URL:    "https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADomains.txt",
 					File:   "",
 					Format: "domain",
 					Type:   "blacklist",
 					Notes:  "",
 				},
-				&RawTarget{
+				{
 					URL:    "https://malc0de.com/bl/ZONES",
 					File:   "",
 					Format: "bind",
 					Type:   "blacklist",
 					Notes:  "",
 				},
-				&RawTarget{
+				{
 					URL:    "https://urlhaus.abuse.ch/downloads/text",
 					File:   "",
 					Format: "url",
 					Type:   "blacklist",
 					Notes:  "",
 				},
-				&RawTarget{
+				{
 					URL:    "https://joewein.net/dl/bl/dom-bl.txt",
 					File:   "",
 					Format: "host",
 					Type:   "whitelist",
 					Notes:  "public list of popular services",
 				},
-				&RawTarget{
+				{
 					URL:    "",
 					File:   "/opt/dnscrypt-proxy/whitelist-private.txt",
 					Format: "domain",
