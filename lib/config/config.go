@@ -4,11 +4,10 @@ import (
 	"flag"
 	"github.com/maxkulish/dnscrypt-list/lib/logger"
 	"go.uber.org/zap"
-	"io/ioutil"
 	"os"
 	"time"
 
-	"gopkg.in/yaml.v3"
+	"github.com/go-yaml/yaml"
 )
 
 // SourceType defines the type of the Source
@@ -76,9 +75,9 @@ type Config struct {
 	SourceList  *Sources
 }
 
-// load reads yaml configuration file
-func load(file string) (*Config, error) {
-	f, err := os.Open(file)
+// configFromYAML reads yaml configuration file
+func configFromYAML(path string) (*Config, error) {
+	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
@@ -87,24 +86,17 @@ func load(file string) (*Config, error) {
 			logger.Error("error closing file: %s\n", zap.Error(err))
 		}
 	}()
-
-	b, err := ioutil.ReadAll(f)
+	config := &Config{}
+	err = yaml.NewDecoder(f).Decode(config)
 	if err != nil {
-		return nil, err
+		return &Config{}, err
 	}
-
-	c := &Config{}
-	err = yaml.Unmarshal(b, c)
-	if err != nil {
-		return nil, err
-	}
-
-	return c, nil
+	return config, nil
 }
 
-// loadSource reads sources yaml file
-func loadSource(file string) (*Sources, error) {
-	f, err := os.Open(file)
+// sourceFromYAML reads yaml source file
+func sourceFromYAML(path string) (*Sources, error) {
+	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
@@ -114,18 +106,12 @@ func loadSource(file string) (*Sources, error) {
 		}
 	}()
 
-	b, err := ioutil.ReadAll(f)
+	sources := &Sources{}
+	err = yaml.NewDecoder(f).Decode(sources)
 	if err != nil {
-		return nil, err
+		return &Sources{}, err
 	}
-
-	s := &Sources{}
-	err = yaml.Unmarshal(b, s)
-	if err != nil {
-		return nil, err
-	}
-
-	return s, nil
+	return sources, nil
 }
 
 // Get read config file
@@ -138,14 +124,14 @@ func Get() (*Config, error) {
 	var conf *Config
 
 	// Read config.yml file
-	conf, err := load(*configFile)
+	conf, err := configFromYAML(*configFile)
 	if err != nil {
 		return nil, err
 	}
 
-	//Read local source file
+	//Read local source file and add it to the config
 	if conf.SourcesLink.FilePath != "" {
-		conf.SourceList, err = loadSource(conf.SourcesLink.FilePath)
+		conf.SourceList, err = sourceFromYAML(conf.SourcesLink.FilePath)
 		if err != nil {
 			return nil, err
 		}
@@ -156,8 +142,6 @@ func Get() (*Config, error) {
 	//	// TODO: get remote source file
 	//	conf, err = load(conf.SourcesLink.FilePath)
 	//}
-
-	//fmt.Printf("Config: %v", conf)
 
 	return conf, nil
 }

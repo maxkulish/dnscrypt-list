@@ -4,6 +4,8 @@ import (
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestGetConfig(t *testing.T) {
@@ -92,5 +94,77 @@ func TestGetConfig(t *testing.T) {
 
 	if conf.Update != expConfig.Update {
 		t.Fatalf("unexpected result for config.Get();\n got: %+v;\n want: %+v\n", conf.Update, expConfig.Update)
+	}
+}
+
+func TestConfigFromYAML(t *testing.T) {
+	t.Helper()
+	t.Parallel()
+
+	want := &Config{
+		Timeout:     1 * time.Minute,
+		TempDir:     "/tmp/dnscrypt",
+		BlackListDB: "/tmp/dnscrypt/blacklist.db",
+		WhiteListDB: "/tmp/dnscrypt/whitelist.db",
+		Update: Update{
+			Sources:   1 * time.Hour,
+			Blacklist: 5 * time.Minute,
+			Whitelist: 6 * time.Hour,
+		},
+		SourcesLink: SourcesLink{
+			FilePath: "sources.yml",
+			URL:      "",
+		},
+		Output: Output{
+			Whitelist: "/tmp/dnscrypt/allowed-names.txt",
+			Blacklist: "/tmp/dnscrypt/blacklist-domains.txt",
+		},
+	}
+	got, err := configFromYAML("../../testdata/config.yml")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !cmp.Equal(got, want) {
+		t.Error(cmp.Diff(got, want))
+	}
+}
+
+func TestSourceFromYAML(t *testing.T) {
+	t.Parallel()
+
+	want := &Sources{
+		Targets: []*RawTarget{
+			{
+				URL:    "",
+				File:   "/opt/dnscrypt-proxy/whitelist-private.txt",
+				Format: "domain",
+				Type:   "whitelist",
+				Notes:  "my private domains to allow even if some of them are on the blacklist",
+			},
+			{
+				URL:    "https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADomains.txt",
+				File:   "",
+				Format: "domain",
+				Type:   "blacklist",
+				Notes:  "",
+			},
+			{
+				URL:    "https://raw.githubusercontent.com/notracking/hosts-blocklists/master/dnscrypt-proxy/dnscrypt-proxy.blacklist.txt",
+				File:   "",
+				Format: "url",
+				Type:   "blacklist",
+				Notes:  "notracking",
+			},
+		},
+	}
+
+	got, err := sourceFromYAML("../../testdata/sources.yml")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !cmp.Equal(got, want) {
+		t.Error(cmp.Diff(got, want))
 	}
 }
