@@ -1,0 +1,17 @@
+---
+timeout: "1m"
+temp_dir: "/tmp/dnscrypt"
+blacklist_db: "/tmp/dnscrypt/blacklist.db"
+whitelist_db: "/tmp/dnscrypt/whitelist.db"
+
+update:
+  sources: "1h"
+  blacklist: "5m"
+  whitelist: "6h"
+
+sources:
+  file: "sources.yml"
+
+output:
+  whitelist_path: "/tmp/dnscrypt/allowed-names.txt"
+  blacklist_path: "/tmp/dnscrypt/blacklist-domains.txt"

@@ -4,6 +4,7 @@ PROJ_NAME = dnscrypt-list
 SHELL := /bin/bash
 FILES = $$(find . -type f -name "*.go" | grep -v '/vendor/')
 VERSION ?= $(or $(shell git tag --sort=creatordate | grep -E '[0-9]' | tail -1 | cut -b 2-7 | awk -F. '{$$NF = $$NF + 1;} 1' | sed 's/ /./g'), $(shell echo 0.0.1))
+PACKAGES = $$(go list ./... | grep -v '/vendor/')
 
 help: _help_
 
@@ -25,7 +26,7 @@ build-local:
 	goreleaser build --single-target --rm-dist --snapshot -f .goreleaser.yml
 
 test:
-	go test -v ./...
+	go test -timeout=15m -race -coverprofile=coverage.out -covermode=atomic -cover $(PACKAGES)
 
 release-local:
 	goreleaser release --snapshot --rm-dist -f .goreleaser.yml
@@ -38,3 +39,6 @@ fmt:
 
 version:
 	@echo $(VERSION)
+
+coverage: test
+	go tool cover -html=coverage.out
