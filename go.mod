@@ -7,7 +7,7 @@ require (
 	github.com/dgraph-io/badger/v3 v3.2103.2
 	github.com/dustin/go-humanize v1.0.0
 	github.com/google/uuid v1.3.0
-	github.com/magefile/mage v1.12.1
+	github.com/magefile/mage v1.13.0
 	github.com/pkg/errors v0.9.1
 	go.uber.org/zap v1.21.0
 	gopkg.in/yaml.v3 v3.0.1
