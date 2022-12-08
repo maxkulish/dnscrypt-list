@@ -13,7 +13,7 @@ var (
 	ErrorEmptyPath = errors.New("file path is empty")
 )
 
-//SaveDomainToFile iterate keys and append them to the file
+// SaveDomainToFile iterate keys and append them to the file
 func SaveDomainToFile(path string, keys []string) error {
 
 	if path == "" {

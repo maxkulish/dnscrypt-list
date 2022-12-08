@@ -21,7 +21,7 @@ var (
 	ErrCommentedLine = errors.New("Commented line")
 )
 
-//ReadFilesAndSaveToDB reads local files and save them to the DB
+// ReadFilesAndSaveToDB reads local files and save them to the DB
 func ReadFilesAndSaveToDB(tempFiles []LocalFile, conn *db.Conn, targetType target.Type) error {
 
 	var total int64

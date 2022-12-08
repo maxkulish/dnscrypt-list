@@ -55,7 +55,7 @@ func (c *Conn) AddBunch(updates map[string]string) error {
 	return err
 }
 
-//GetAllKeys iterate all keys and returns them in the slice
+// GetAllKeys iterate all keys and returns them in the slice
 func (c *Conn) GetAllKeys() []string {
 
 	var keys []string

@@ -110,7 +110,7 @@ func GetAndSaveTargets(targets *target.TargetsStore) ([]LocalFile, error) {
 	return temp.Files, nil
 }
 
-//GetRemote sends GET response and save resp.Body
+// GetRemote sends GET response and save resp.Body
 func (t *Temp) GetRemote(wg *sync.WaitGroup, targID string, remoteURL *url.URL) {
 
 	if wg != nil {

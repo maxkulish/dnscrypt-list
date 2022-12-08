@@ -2,12 +2,13 @@ package config
 
 import (
 	"flag"
-	"github.com/maxkulish/dnscrypt-list/lib/logger"
-	"go.uber.org/zap"
 	"os"
 	"time"
 
-	"github.com/go-yaml/yaml"
+	"github.com/maxkulish/dnscrypt-list/lib/logger"
+	"go.uber.org/zap"
+
+	"gopkg.in/yaml.v3"
 )
 
 // SourceType defines the type of the Source
