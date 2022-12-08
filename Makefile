@@ -16,8 +16,9 @@ _help_:
 	@echo make build-local - build local package for current OS. Output folder ./dist
 	@echo make test - run tests
 	@echo make release-local - build and archive binaries for release. Output folder ./dist
+	@echo make upgrade-deps - upgrade dependencies
 
-.PHONY: build build-local test release-local vet fmt
+.PHONY: build build-local test release-local vet fmt upgrade-deps
 
 build: .goreleaser.yml
 	goreleaser build --rm-dist --snapshot -f .goreleaser.yml
@@ -42,3 +43,7 @@ version:
 
 coverage: test
 	go tool cover -html=coverage.out
+
+# Upgrade all dependencies to the latest version
+upgrade-deps:
+	go get -u -t -d -v ./...
